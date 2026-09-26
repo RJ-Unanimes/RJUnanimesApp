@@ -14,14 +14,8 @@
             <h2 style="color: #0284c7; margin-bottom: 10px;">Red Unánimes</h2>
             <p style="color: #64748b; margin-bottom: 25px;">Acceso exclusivo para Liderazgo</p>
             <form id="formulario-login">
-                <div class="campo">
-                    <label>Usuario:</label>
-                    <input type="text" id="login-username" required placeholder="Ej. admin o juan">
-                </div>
-                <div class="campo" style="margin-top: 15px;">
-                    <label>Contraseña:</label>
-                    <input type="password" id="login-password" required placeholder="********">
-                </div>
+                <div class="campo"><label>Usuario:</label><input type="text" id="login-username" required placeholder="Ej. admin o juan"></div>
+                <div class="campo" style="margin-top: 15px;"><label>Contraseña:</label><input type="password" id="login-password" required placeholder="********"></div>
                 <button type="submit" class="btn-primario" style="width: 100%; margin-top: 25px;">Iniciar Sesión</button>
             </form>
             <p id="mensaje-error-login" style="color: #ef4444; margin-top: 15px; display: none; font-size: 0.9rem; text-align: center;">Credenciales incorrectas.</p>
@@ -30,7 +24,6 @@
 
     <!-- APLICACIÓN PRINCIPAL -->
     <div id="app-principal" class="contenedor-principal" style="display: none;">
-        <!-- Menú Lateral -->
         <aside class="menu-lateral">
             <h2>Red Unánimes</h2>
             <nav>
@@ -39,42 +32,47 @@
                 <button id="menu-eventos" onclick="mostrarSeccion('eventos')">Gestión de Eventos</button>
                 <button id="menu-conectores" onclick="mostrarSeccion('conectores')">Equipo de Conectores</button>
                 <hr style="border-top: 1px solid #334155; margin: 10px 0;">
-                <!-- NUEVO: Botón de Mi Perfil -->
                 <button id="btn-abrir-mi-perfil" style="color: #38bdf8;">👤 Mi Perfil</button>
             </nav>
             <button id="btn-cerrar-sesion" style="margin-top: auto; color: #ef4444; border-top: 1px solid #334155; border-radius: 0; padding-top: 20px;">🚪 Cerrar Sesión</button>
         </aside>
 
-        <!-- Área de Contenido -->
         <main class="contenido">
+            <!-- INICIO -->
             <section id="panel" class="seccion-activa">
-                <h1>Panel de Control</h1>
-                <p>Resumen general de la Red Juvenil Unánimes.</p>
+                <h1 id="titulo-panel">Panel de Control</h1>
+                <p>Resumen general de tu área de trabajo.</p>
                 <div class="tarjetas-resumen">
-                    <div class="tarjeta-stat" style="border-left-color: #0284c7;"><h3>Total Jóvenes</h3><p id="stat-jovenes">0</p></div>
-                    <div class="tarjeta-stat" style="border-left-color: #10b981;"><h3>Eventos</h3><p id="stat-eventos">0</p></div>
-                    <div class="tarjeta-stat" style="border-left-color: #8b5cf6;"><h3>Conectores</h3><p id="stat-conectores">0</p></div>
+                    <div class="tarjeta-stat" style="border-left-color: #0284c7;"><h3>Jóvenes Asignados</h3><p id="stat-jovenes">0</p></div>
+                    <div class="tarjeta-stat stat-admin-only" style="border-left-color: #10b981;"><h3>Eventos</h3><p id="stat-eventos">0</p></div>
+                    <div class="tarjeta-stat stat-admin-only" style="border-left-color: #8b5cf6;"><h3>Conectores</h3><p id="stat-conectores">0</p></div>
                 </div>
                 <h3 style="margin-top: 40px; margin-bottom: 20px; color: #0f172a;">Acciones Rápidas</h3>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <button onclick="mostrarSeccion('jovenes'); document.getElementById('btn-nuevo-joven').click();" class="btn-primario">👤 Registrar Joven</button>
-                    <button id="btn-nuevo-evento-rapido" onclick="mostrarSeccion('eventos'); document.getElementById('btn-nuevo-evento').click();" class="btn-primario" style="background-color: #10b981;">📅 Crear Evento</button>
-                    <button id="btn-nuevo-conector-rapido" onclick="mostrarSeccion('conectores'); document.getElementById('btn-nuevo-conector').click();" class="btn-primario" style="background-color: #8b5cf6;">🤝 Añadir Conector</button>
+                    <button id="btn-nuevo-evento-rapido" onclick="mostrarSeccion('eventos'); document.getElementById('btn-nuevo-evento').click();" class="btn-primario stat-admin-only" style="background-color: #10b981;">📅 Crear Evento</button>
+                    <button id="btn-nuevo-conector-rapido" onclick="mostrarSeccion('conectores'); document.getElementById('btn-nuevo-conector').click();" class="btn-primario stat-admin-only" style="background-color: #8b5cf6;">🤝 Añadir Conector</button>
                 </div>
             </section>
 
+            <!-- DIRECTORIO JÓVENES -->
             <section id="jovenes" class="seccion-oculta">
                 <h1>Directorio de Jóvenes</h1>
-                <button id="btn-nuevo-joven" class="btn-primario">+ Añadir Joven</button>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button id="btn-nuevo-joven" class="btn-primario">+ Añadir Joven</button>
+                    <button id="btn-compartir-form" class="btn-primario" style="background-color: #f59e0b;">🔗 Compartir Formulario Público</button>
+                </div>
                 <div id="lista-jovenes"></div>
             </section>
 
+            <!-- GESTIÓN EVENTOS -->
             <section id="eventos" class="seccion-oculta">
                 <h1>Control de Eventos</h1>
                 <button id="btn-nuevo-evento" class="btn-primario">+ Crear Evento</button>
                 <div id="lista-eventos"></div>
             </section>
 
+            <!-- EQUIPO CONECTORES -->
             <section id="conectores" class="seccion-oculta">
                 <h1>Equipo de Conectores</h1>
                 <button id="btn-nuevo-conector" class="btn-primario" style="background-color: #8b5cf6;">+ Añadir Conector</button>
@@ -83,8 +81,7 @@
         </main>
     </div>
 
-    <!-- MODALES EXISTENTES... -->
-    <!-- MODAL: JOVEN -->
+    <!-- MODAL: JOVEN (Actualizado con todos los campos) -->
     <div id="modal-joven" class="modal-oculto">
         <div class="contenido-modal">
             <span id="cerrar-modal" class="btn-cerrar">&times;</span>
@@ -96,8 +93,41 @@
                     <div class="campo"><label>Fecha de Nacimiento:</label><input type="date" id="fecha-nac"></div>
                     <div class="campo"><label>WhatsApp:</label><input type="tel" id="whatsapp"></div>
                     <div class="campo"><label>Barrio / Sector:</label><input type="text" id="barrio"></div>
-                    <div class="campo" style="grid-column: 1 / -1;"><label>Intereses, Gustos y Personalidad:</label><textarea id="intereses" rows="2"></textarea></div>
-                    <div class="campo"><label>Dones / Área de Servicio:</label><input type="text" id="dones"></div>
+                    
+                    <div class="campo"><label>Ocupación:</label><select id="ocupacion"><option value="Colegio">Colegio</option><option value="Universidad">Universidad</option><option value="Trabajo">Trabajo</option><option value="Otro">Otro</option><option value="">No especificado</option></select></div>
+                    <div class="campo"><label>Nivel Biblia:</label><select id="nivelBiblia"><option value="">No especificado</option><option value="1">1 - Casi nada</option><option value="2">2 - Lo básico</option><option value="3">3 - Regular</option><option value="4">4 - Bastante</option><option value="5">5 - Mucho</option></select></div>
+                    
+                    <div class="campo"><label>Asistencia:</label><select id="tipoAsistencia"><option value="Solo">Solo</option><option value="Acompañado">Acompañado</option><option value="">No especificado</option></select></div>
+                    <div id="caja-quien-acompana-int" class="campo" style="display: none; padding-left: 15px; border-left: 3px solid #0284c7;">
+                        <label>¿Con quién viene?</label>
+                        <div class="opciones-check">
+                            <label><input type="checkbox" class="check-acompana-edit" value="Familia"> Familia</label>
+                            <label><input type="checkbox" class="check-acompana-edit" value="Amigos"> Amigos</label>
+                            <label><input type="checkbox" class="check-acompana-edit" value="Pareja"> Pareja</label>
+                        </div>
+                    </div>
+
+                    <div class="campo" style="grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px; border-radius: 8px;">
+                        <input type="checkbox" id="quiere-servir" style="width: 22px; height: 22px;">
+                        <label style="margin: 0; font-weight: bold; color: #166534;" for="quiere-servir">¿Desea servir?</label>
+                    </div>
+                    
+                    <div id="caja-ministerios-int" class="campo" style="display: none; grid-column: 1 / -1; padding-left: 15px; border-left: 3px solid #10b981;">
+                        <label>Áreas de Interés:</label>
+                        <div class="opciones-check">
+                            <label><input type="checkbox" class="check-ministerio-edit" value="Música"> Música</label>
+                            <label><input type="checkbox" class="check-ministerio-edit" value="Danza"> Danza</label>
+                            <label><input type="checkbox" class="check-ministerio-edit" value="Cocina"> Cocina</label>
+                            <label><input type="checkbox" class="check-ministerio-edit" value="Multimedia"> Multimedia</label>
+                            <label><input type="checkbox" class="check-ministerio-edit" value="Niños"> Niños</label>
+                            <label><input type="checkbox" class="check-ministerio-edit" value="Ujieres"> Ujieres</label>
+                            <label><input type="checkbox" class="check-ministerio-edit" value="Equipo RJU"> Equipo RJU</label>
+                        </div>
+                    </div>
+
+                    <div class="campo" style="grid-column: 1 / -1;"><label>Intereses y Gustos:</label><textarea id="intereses" rows="2"></textarea></div>
+                    <div class="campo" style="grid-column: 1 / -1;"><label>Comentarios / Desea aprender:</label><textarea id="comentarios" rows="2"></textarea></div>
+                    <div class="campo"><label>Dones Evaluados:</label><input type="text" id="dones"></div>
                     <div class="campo"><label>Fecha Primera Visita:</label><input type="date" id="fecha-visita"></div>
                     <div class="campo"><label>Conector Asignado:</label><select id="conector"><option value="">Sin asignar</option></select></div>
                     <div class="campo"><label>Estado actual:</label><select id="estado"><option value="Nuevo">Nuevo</option><option value="Constante">Constante</option><option value="Intermitente">Intermitente</option></select></div>
@@ -107,90 +137,34 @@
         </div>
     </div>
 
+    <!-- MODAL: ELIMINAR JOVEN (SEGURIDAD ADMIN) -->
+    <div id="modal-eliminar" class="modal-oculto">
+        <div class="contenido-modal" style="max-width: 400px; text-align: center;">
+            <span id="cerrar-modal-eliminar" class="btn-cerrar">&times;</span>
+            <h2 style="color: #ef4444;">Eliminar Perfil</h2>
+            <p style="margin-top: 10px;">Estás a punto de eliminar a <strong id="nombre-joven-eliminar"></strong>. Esta acción no se puede deshacer.</p>
+            <form id="formulario-eliminar" style="margin-top: 20px;">
+                <input type="hidden" id="id-joven-eliminar">
+                <div class="campo">
+                    <label style="text-align: left;">Por seguridad, ingresa tu contraseña de Admin:</label>
+                    <input type="password" id="pass-eliminar" required>
+                </div>
+                <button type="submit" class="btn-primario" style="background-color: #ef4444; width: 100%; margin-top: 20px;">Confirmar y Eliminar</button>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: EVENTO -->
-    <div id="modal-evento" class="modal-oculto">
-        <div class="contenido-modal">
-            <span id="cerrar-modal-evento" class="btn-cerrar">&times;</span>
-            <h2 id="titulo-modal-evento">Crear Nuevo Evento</h2>
-            <form id="formulario-evento">
-                <input type="hidden" id="id-evento-edit">
-                <div class="grupo-inputs">
-                    <div class="campo" style="grid-column: 1 / -1;"><label>Nombre Actividad:</label><input type="text" id="nombre-evento" required></div>
-                    <div class="campo" style="grid-column: 1 / -1;"><label>Fecha:</label><input type="date" id="fecha-evento" required></div>
-                </div>
-                <div class="acciones-form"><button type="submit" class="btn-guardar">Guardar Evento</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: CONECTOR (ACTUALIZADO CON CONTRASEÑA) -->
-    <div id="modal-conector" class="modal-oculto">
-        <div class="contenido-modal">
-            <span id="cerrar-modal-conector" class="btn-cerrar">&times;</span>
-            <h2 id="titulo-modal-conector">Añadir Conector</h2>
-            <form id="formulario-conector">
-                <input type="hidden" id="id-conector-edit">
-                <div class="grupo-inputs">
-                    <div class="campo" style="grid-column: 1 / -1;"><label>Nombre Completo:</label><input type="text" id="nombre-conector" required></div>
-                    <div class="campo"><label>WhatsApp:</label><input type="tel" id="whatsapp-conector"></div>
-                    <div class="campo"><label>Usuario (Login):</label><input type="text" id="usuario-conector" required placeholder="Ej. pedro"></div>
-                    <div class="campo" id="caja-pass-conector"><label>Contraseña Temporal:</label><input type="password" id="pass-conector" placeholder="Mínimo 6 letras/números"></div>
-                    <div class="campo" style="grid-column: 1 / -1;"><label>Rol en el sistema:</label><select id="rol-conector"><option value="conector">Conector (Solo ver jóvenes y asistencia)</option><option value="admin">Administrador (Acceso total)</option></select></div>
-                </div>
-                <div class="acciones-form"><button type="submit" class="btn-guardar" style="background-color: #8b5cf6;">Guardar Conector</button></div>
-            </form>
-        </div>
-    </div>
-
+    <div id="modal-evento" class="modal-oculto"><div class="contenido-modal"><span id="cerrar-modal-evento" class="btn-cerrar">&times;</span><h2 id="titulo-modal-evento">Crear Evento</h2><form id="formulario-evento"><input type="hidden" id="id-evento-edit"><div class="grupo-inputs"><div class="campo" style="grid-column: 1 / -1;"><label>Nombre Actividad:</label><input type="text" id="nombre-evento" required></div><div class="campo" style="grid-column: 1 / -1;"><label>Fecha:</label><input type="date" id="fecha-evento" required></div></div><div class="acciones-form"><button type="submit" class="btn-guardar">Guardar Evento</button></div></form></div></div>
+    <!-- MODAL: CONECTOR -->
+    <div id="modal-conector" class="modal-oculto"><div class="contenido-modal"><span id="cerrar-modal-conector" class="btn-cerrar">&times;</span><h2 id="titulo-modal-conector">Añadir Conector</h2><form id="formulario-conector"><input type="hidden" id="id-conector-edit"><div class="grupo-inputs"><div class="campo" style="grid-column: 1 / -1;"><label>Nombre Completo:</label><input type="text" id="nombre-conector" required></div><div class="campo"><label>WhatsApp:</label><input type="tel" id="whatsapp-conector"></div><div class="campo"><label>Usuario (Login):</label><input type="text" id="usuario-conector" required placeholder="Ej. pedro"></div><div class="campo" id="caja-pass-conector"><label>Contraseña Temporal:</label><input type="password" id="pass-conector" placeholder="Mínimo 6 caracteres"></div><div class="campo" style="grid-column: 1 / -1;"><label>Rol:</label><select id="rol-conector"><option value="conector">Conector (Solo ver jóvenes y asistencia)</option><option value="admin">Administrador (Acceso total)</option></select></div></div><div class="acciones-form"><button type="submit" class="btn-guardar" style="background-color: #8b5cf6;">Guardar Conector</button></div></form></div></div>
     <!-- MODAL: ASISTENCIA -->
-    <div id="modal-asistencia" class="modal-oculto">
-        <div class="contenido-modal">
-            <span id="cerrar-modal-asistencia" class="btn-cerrar">&times;</span>
-            <h2 id="titulo-asistencia">Registrar Asistencia</h2>
-            <form id="formulario-asistencia">
-                <input type="hidden" id="id-joven-asistencia">
-                <div class="grupo-inputs">
-                    <div class="campo" style="grid-column: 1 / -1;"><label>Seleccionar Evento:</label><select id="select-evento-asistencia" required></select></div>
-                    <div class="campo" style="grid-column: 1 / -1; flex-direction: row; gap: 15px; align-items: center;"><input type="checkbox" id="check-asistio" checked style="width: 20px; height: 20px;"><label style="margin-bottom: 0;">Asistió a la actividad</label></div>
-                    <div class="campo" style="grid-column: 1 / -1; flex-direction: row; gap: 15px; align-items: center;"><input type="checkbox" id="check-participo" style="width: 20px; height: 20px;"><label style="margin-bottom: 0;">Fue participativo/a en las dinámicas</label></div>
-                    <div class="campo" style="grid-column: 1 / -1;"><label>Notas del Conector:</label><textarea id="notas-asistencia" rows="2"></textarea></div>
-                </div>
-                <div class="acciones-form"><button type="submit" class="btn-guardar">Guardar Registro</button></div>
-            </form>
-        </div>
-    </div>
-
+    <div id="modal-asistencia" class="modal-oculto"><div class="contenido-modal"><span id="cerrar-modal-asistencia" class="btn-cerrar">&times;</span><h2 id="titulo-asistencia">Registrar Asistencia</h2><form id="formulario-asistencia"><input type="hidden" id="id-joven-asistencia"><div class="grupo-inputs"><div class="campo" style="grid-column: 1 / -1;"><label>Seleccionar Evento:</label><select id="select-evento-asistencia" required></select></div><div class="campo" style="grid-column: 1 / -1; flex-direction: row; gap: 15px; align-items: center;"><input type="checkbox" id="check-asistio" checked style="width: 20px; height: 20px;"><label style="margin-bottom: 0;">Asistió a la actividad</label></div><div class="campo" style="grid-column: 1 / -1; flex-direction: row; gap: 15px; align-items: center;"><input type="checkbox" id="check-participo" style="width: 20px; height: 20px;"><label style="margin-bottom: 0;">Fue participativo/a en las dinámicas</label></div><div class="campo" style="grid-column: 1 / -1;"><label>Notas del Conector:</label><textarea id="notas-asistencia" rows="2"></textarea></div></div><div class="acciones-form"><button type="submit" class="btn-guardar">Guardar Registro</button></div></form></div></div>
     <!-- MODAL: VER PERFIL COMPLETO -->
-    <div id="modal-perfil" class="modal-oculto">
-        <div class="contenido-modal" style="max-width: 700px;">
-            <span id="cerrar-modal-perfil" class="btn-cerrar">&times;</span>
-            <h2 id="titulo-perfil">Perfil Completo</h2>
-            <div id="info-perfil" style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e2e8f0; line-height: 1.6;"></div>
-            <h3 style="color: #0f172a; margin-bottom: 10px;">Historial de Asistencia</h3>
-            <div id="contenido-historial" style="max-height: 40vh; overflow-y: auto; padding-right: 10px;"></div>
-        </div>
-    </div>
+    <div id="modal-perfil" class="modal-oculto"><div class="contenido-modal" style="max-width: 700px;"><span id="cerrar-modal-perfil" class="btn-cerrar">&times;</span><h2 id="titulo-perfil">Perfil Completo</h2><div id="info-perfil" style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e2e8f0; line-height: 1.6;"></div><h3 style="color: #0f172a; margin-bottom: 10px;">Historial de Asistencia</h3><div id="contenido-historial" style="max-height: 40vh; overflow-y: auto; padding-right: 10px;"></div></div></div>
+    <!-- MODAL: MI PERFIL -->
+    <div id="modal-mi-perfil" class="modal-oculto"><div class="contenido-modal"><span id="cerrar-modal-mi-perfil" class="btn-cerrar">&times;</span><h2>Editar Mi Perfil</h2><p style="color: #64748b; margin-bottom: 15px; font-size: 0.9rem;">Si cambias tu usuario o contraseña, tu sesión se cerrará y deberás volver a ingresar por seguridad.</p><form id="formulario-mi-perfil"><input type="hidden" id="id-mi-perfil"><div class="grupo-inputs"><div class="campo"><label>Mi Nombre:</label><input type="text" id="mi-nombre" required></div><div class="campo"><label>Mi WhatsApp:</label><input type="tel" id="mi-whatsapp"></div><div class="campo"><label>Mi Usuario (Login):</label><input type="text" id="mi-usuario" required></div><div class="campo"><label>Nueva Contraseña:</label><input type="password" id="mi-pass" placeholder="Dejar en blanco para no cambiar"></div></div><div class="acciones-form"><button type="submit" class="btn-guardar" style="background-color: #38bdf8;">Guardar Cambios</button></div></form></div></div>
 
-    <!-- NUEVO MODAL: MI PERFIL (Para el usuario activo) -->
-    <div id="modal-mi-perfil" class="modal-oculto">
-        <div class="contenido-modal">
-            <span id="cerrar-modal-mi-perfil" class="btn-cerrar">&times;</span>
-            <h2>Editar Mi Perfil</h2>
-            <p style="color: #64748b; margin-bottom: 15px; font-size: 0.9rem;">Si cambias tu usuario o contraseña, tu sesión se cerrará y deberás volver a ingresar por seguridad.</p>
-            <form id="formulario-mi-perfil">
-                <input type="hidden" id="id-mi-perfil">
-                <div class="grupo-inputs">
-                    <div class="campo"><label>Mi Nombre:</label><input type="text" id="mi-nombre" required></div>
-                    <div class="campo"><label>Mi WhatsApp:</label><input type="tel" id="mi-whatsapp"></div>
-                    <div class="campo"><label>Mi Usuario (Login):</label><input type="text" id="mi-usuario" required></div>
-                    <div class="campo"><label>Nueva Contraseña:</label><input type="password" id="mi-pass" placeholder="Dejar en blanco para no cambiar"></div>
-                </div>
-                <div class="acciones-form"><button type="submit" class="btn-guardar" style="background-color: #38bdf8;">Guardar Cambios</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
