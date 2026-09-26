@@ -18,7 +18,8 @@ const secondaryAuth = secondaryApp.auth();
 let currentUsername = '';
 let currentUserRol = '';
 let currentConectorId = '';
-let currentUserDisplayName = ''; // Necesario para filtrar a los jóvenes
+let currentUserDisplayName = '';
+let todosLosJovenesData = []; // Guardará todos los jóvenes en memoria para poder filtrarlos rápido
 
 // --- 2. LÓGICA DE LOGIN Y ROLES ---
 const pantallaLogin = document.getElementById('pantalla-login');
@@ -32,20 +33,21 @@ auth.onAuthStateChanged((userAuth) => {
             currentUserRol = (docRol.exists) ? docRol.data().rol : 'conector'; 
             if (currentUsername === 'admin') { currentUserRol = 'admin'; }
 
-            // Buscar datos del conector activo para saber su Nombre Real y poder filtrar
             db.collection('conectores').where('usuario', '==', currentUsername).get().then(snap => {
                 if(!snap.empty) { 
                     currentConectorId = snap.docs[0].id; 
                     currentUserDisplayName = snap.docs[0].data().nombre; 
                 }
                 
-                // Ocultar/Mostrar según el rol
+                // Mostrar UI dependiendo del Rol
                 if (currentUserRol === 'admin') {
                     document.querySelectorAll('.stat-admin-only, #menu-eventos, #menu-conectores').forEach(el => el.style.display = 'block');
                     document.getElementById('titulo-panel').innerText = "Panel de Control";
+                    document.getElementById('caja-filtro-mis-jovenes').style.display = 'none'; // Admin siempre ve todos
                 } else {
                     document.querySelectorAll('.stat-admin-only, #menu-eventos, #menu-conectores').forEach(el => el.style.display = 'none');
                     document.getElementById('titulo-panel').innerText = "Mi Área de Trabajo";
+                    document.getElementById('caja-filtro-mis-jovenes').style.display = 'flex'; // Conectores pueden filtrar
                 }
 
                 pantallaLogin.style.display = 'none';
@@ -59,8 +61,7 @@ auth.onAuthStateChanged((userAuth) => {
 });
 
 document.getElementById('formulario-login').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const userString = document.getElementById('login-username').value.toLowerCase().trim();
+    e.preventDefault(); const userString = document.getElementById('login-username').value.toLowerCase().trim();
     auth.signInWithEmailAndPassword(userString + '@unanimes.app', document.getElementById('login-password').value)
         .then(() => { document.getElementById('mensaje-error-login').style.display = 'none'; })
         .catch(() => { document.getElementById('mensaje-error-login').style.display = 'block'; });
@@ -78,29 +79,23 @@ function cerrarModal(modalId) { document.getElementById(modalId).classList.remov
     document.getElementById(id).addEventListener('click', (e) => cerrarModal(e.target.closest('.modal-activo').id));
 });
 
-// Botón de Compartir Formulario
 document.getElementById('btn-compartir-form').addEventListener('click', () => {
     const link = "https://rj-unanimes.github.io/RJUnanimesApp/registro.html";
-    navigator.clipboard.writeText(link).then(() => {
-        alert("¡Enlace copiado al portapapeles!\n\n" + link);
-    }).catch(() => {
-        alert("Selecciona y copia este enlace:\n" + link);
-    });
+    navigator.clipboard.writeText(link).then(() => { alert("¡Enlace copiado al portapapeles!\n\n" + link); }).catch(() => { alert("Selecciona y copia este enlace:\n" + link); });
 });
 
-// Lógica de checks interactivos del form interno
-document.getElementById('tipoAsistencia').addEventListener('change', function() {
-    document.getElementById('caja-quien-acompana-int').style.display = (this.value === 'Acompañado') ? 'block' : 'none';
-});
-document.getElementById('quiere-servir').addEventListener('change', function() {
-    document.getElementById('caja-ministerios-int').style.display = this.checked ? 'block' : 'none';
-});
+document.getElementById('tipoAsistencia').addEventListener('change', function() { document.getElementById('caja-quien-acompana-int').style.display = (this.value === 'Acompañado') ? 'block' : 'none'; });
+document.getElementById('quiere-servir').addEventListener('change', function() { document.getElementById('caja-ministerios-int').style.display = this.checked ? 'block' : 'none'; });
 
-// Abrir form vacío
+// Abrir form para NUEVO joven (BLOQUEANDO EL SELECTOR SI ES CONECTOR)
 document.getElementById('btn-nuevo-joven').addEventListener('click', () => {
     document.getElementById('formulario-joven').reset(); document.getElementById('id-joven-edit').value = ''; 
     document.getElementById('titulo-modal-joven').innerText = 'Registrar Nuevo Joven';
     document.getElementById('caja-quien-acompana-int').style.display = 'none'; document.getElementById('caja-ministerios-int').style.display = 'none';
+    
+    // Solo el Admin puede asignar el conector
+    document.getElementById('conector').disabled = (currentUserRol !== 'admin');
+    
     document.getElementById('modal-joven').classList.remove('modal-oculto'); document.getElementById('modal-joven').classList.add('modal-activo');
 });
 
@@ -109,9 +104,8 @@ document.getElementById('btn-nuevo-joven').addEventListener('click', () => {
 let eventosDisponibles = []; 
 
 function iniciarApp() {
-    // (LÓGICAS YA EXISTENTES DE EVENTOS, MI PERFIL Y CONECTORES SE MANTIENEN IGUAL. SOLO LAS RESUMO AQUÍ POR ESPACIO PERO FUNCIONAN COMPLETO)
     
-    // ... [Aquí va la lógica de 'Mi Perfil' y 'Conectores' que te pasé en el mensaje anterior, no han cambiado, solo copia y pega las tuyas o usa estas comprimidas] ...
+    // ---- LÓGICA DE MI PERFIL ----
     document.getElementById('btn-abrir-mi-perfil').addEventListener('click', () => {
         if(!currentConectorId && currentUsername === 'admin') { alert("Eres el Admin maestro. No tienes perfil asignado."); return; }
         db.collection('conectores').doc(currentConectorId).get().then(doc => {
@@ -130,6 +124,7 @@ function iniciarApp() {
         Promise.all(p).then(() => { cerrarModal('modal-mi-perfil'); if (newUser !== currentUsername || newPass) { alert("Credenciales actualizadas. Inicia sesión de nuevo."); auth.signOut().then(() => window.location.reload()); } else { alert("Perfil actualizado."); } }).catch(err => alert("Error: " + err.message));
     });
 
+    // ---- CONECTORES (ADMIN ONLY) ----
     document.getElementById('btn-nuevo-evento').addEventListener('click', () => { document.getElementById('formulario-evento').reset(); document.getElementById('id-evento-edit').value = ''; document.getElementById('titulo-modal-evento').innerText = 'Crear Nuevo Evento'; document.getElementById('modal-evento').classList.remove('modal-oculto'); document.getElementById('modal-evento').classList.add('modal-activo'); });
     document.getElementById('btn-nuevo-conector').addEventListener('click', () => { document.getElementById('formulario-conector').reset(); document.getElementById('id-conector-edit').value = ''; document.getElementById('titulo-modal-conector').innerText = 'Añadir Conector'; document.getElementById('pass-conector').required = true; document.getElementById('caja-pass-conector').style.display = 'flex'; document.getElementById('modal-conector').classList.remove('modal-oculto'); document.getElementById('modal-conector').classList.add('modal-activo'); });
 
@@ -159,7 +154,8 @@ function iniciarApp() {
         });
     });
 
-    // ---- JÓVENES (ACTUALIZADO CON TODOS LOS CAMPOS) ----
+
+    // ---- LÓGICA DE JÓVENES (CON FILTROS Y BLOQUEOS DE ROL) ----
     window.editarJoven = function(id) {
         db.collection('jovenes').doc(id).get().then(doc => {
             const j = doc.data(); document.getElementById('id-joven-edit').value = id;
@@ -170,9 +166,11 @@ function iniciarApp() {
             document.getElementById('tipoAsistencia').value = j.tipoAsistencia || ''; document.getElementById('intereses').value = j.intereses || ''; 
             document.getElementById('comentarios').value = j.comentarios || ''; document.getElementById('dones').value = j.dones || '';
             document.getElementById('fecha-visita').value = j.fechaVisita || ''; document.getElementById('estado').value = j.estado || 'Nuevo';
+            
+            // Cargar conector actual y bloquear el campo si es Conector
             document.getElementById('conector').value = j.conector || '';
+            document.getElementById('conector').disabled = (currentUserRol !== 'admin');
 
-            // Restaurar Checkboxes
             document.querySelectorAll('.check-ministerio-edit, .check-acompana-edit').forEach(chk => chk.checked = false);
             if(j.ministerios) j.ministerios.forEach(val => { let c = document.querySelector(`.check-ministerio-edit[value="${val}"]`); if(c) c.checked = true; });
             if(j.acompanantes) j.acompanantes.forEach(val => { let c = document.querySelector(`.check-acompana-edit[value="${val}"]`); if(c) c.checked = true; });
@@ -198,29 +196,40 @@ function iniciarApp() {
             quiereServir: document.getElementById('quiere-servir').checked, ministerios: mins,
             intereses: document.getElementById('intereses').value || '', comentarios: document.getElementById('comentarios').value || '',
             dones: document.getElementById('dones').value || '', fechaVisita: document.getElementById('fecha-visita').value || '', 
-            estado: document.getElementById('estado').value || 'Nuevo', conector: document.getElementById('conector').value || ''
+            estado: document.getElementById('estado').value || 'Nuevo', 
+            conector: document.getElementById('conector').value || ''
         };
 
         if (idEdit) db.collection('jovenes').doc(idEdit).update(datos).then(() => cerrarModal('modal-joven'));
         else { datos.fechaRegistro = firebase.firestore.FieldValue.serverTimestamp(); db.collection('jovenes').add(datos).then(() => cerrarModal('modal-joven')); }
     });
 
-    // SISTEMA DE FILTRADO PARA CONECTORES
-    let consultaJovenes = db.collection('jovenes');
-    if (currentUserRol !== 'admin' && currentUserDisplayName) {
-        // Si no es admin, filtramos por el nombre del conector asignado
-        consultaJovenes = db.collection('jovenes').where('conector', '==', currentUserDisplayName);
-    }
 
-    consultaJovenes.onSnapshot((snapshot) => {
+    // DESCARGAR TODOS LOS JÓVENES Y FILTRAR EN LA PANTALLA
+    db.collection('jovenes').onSnapshot((snapshot) => {
         document.getElementById('stat-jovenes').innerText = snapshot.size;
-        const lista = document.getElementById('lista-jovenes'); lista.innerHTML = ''; 
-        let jovenesArr = []; snapshot.forEach(doc => jovenesArr.push({id: doc.id, ...doc.data()}));
-        jovenesArr.sort((a, b) => (b.fechaRegistro?.seconds || 0) - (a.fechaRegistro?.seconds || 0));
+        todosLosJovenesData = []; 
+        snapshot.forEach(doc => todosLosJovenesData.push({id: doc.id, ...doc.data()}));
+        todosLosJovenesData.sort((a, b) => (b.fechaRegistro?.seconds || 0) - (a.fechaRegistro?.seconds || 0));
+        
+        renderizarJovenes();
+    });
 
-        jovenesArr.forEach((joven) => {
+    // Escuchar cambios en la casilla "Ver solo mis asignados"
+    document.getElementById('check-mis-jovenes').addEventListener('change', renderizarJovenes);
+
+    function renderizarJovenes() {
+        const lista = document.getElementById('lista-jovenes'); 
+        lista.innerHTML = ''; 
+        const filtroMios = document.getElementById('check-mis-jovenes').checked;
+
+        todosLosJovenesData.forEach((joven) => {
+            // Si la casilla está marcada y el joven NO me pertenece, me lo salto
+            if (filtroMios && currentUserRol !== 'admin' && joven.conector !== currentUserDisplayName) {
+                return;
+            }
+
             let claseEstado = joven.estado === 'Nuevo' ? 'estado-nuevo' : joven.estado === 'Constante' ? 'estado-constante' : 'estado-intermitente';
-            // Botón de eliminar (SOLO PARA ADMIN)
             const btnEliminar = (currentUserRol === 'admin') ? `<button onclick="abrirModalEliminar('${joven.id}', '${joven.nombre}')" class="btn-editar" style="background-color: #ef4444; margin-top: 5px;">🗑️ Eliminar Perfil</button>` : '';
 
             lista.innerHTML += `
@@ -237,34 +246,21 @@ function iniciarApp() {
                 </div>
             `;
         });
-    });
+    }
 
-    // LÓGICA DE ELIMINACIÓN SEGURA
+    // ELIMINAR JOVEN (ADMIN ONLY)
     window.abrirModalEliminar = function(id, nombre) {
-        document.getElementById('id-joven-eliminar').value = id;
-        document.getElementById('nombre-joven-eliminar').innerText = nombre;
-        document.getElementById('pass-eliminar').value = '';
+        document.getElementById('id-joven-eliminar').value = id; document.getElementById('nombre-joven-eliminar').innerText = nombre; document.getElementById('pass-eliminar').value = '';
         document.getElementById('modal-eliminar').classList.remove('modal-oculto'); document.getElementById('modal-eliminar').classList.add('modal-activo');
     }
-    
     document.getElementById('formulario-eliminar').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const idJoven = document.getElementById('id-joven-eliminar').value;
-        const passwordConfirm = document.getElementById('pass-eliminar').value;
-        const userCred = auth.currentUser;
-        
+        e.preventDefault(); const idJoven = document.getElementById('id-joven-eliminar').value; const passwordConfirm = document.getElementById('pass-eliminar').value; const userCred = auth.currentUser;
         const credential = firebase.auth.EmailAuthProvider.credential(userCred.email, passwordConfirm);
-        
-        userCred.reauthenticateWithCredential(credential).then(() => {
-            db.collection('jovenes').doc(idJoven).delete().then(() => {
-                cerrarModal('modal-eliminar'); alert('Perfil eliminado permanentemente.');
-            });
-        }).catch((error) => {
-            alert('Contraseña incorrecta. No se puede eliminar por seguridad.');
-        });
+        userCred.reauthenticateWithCredential(credential).then(() => { db.collection('jovenes').doc(idJoven).delete().then(() => { cerrarModal('modal-eliminar'); alert('Perfil eliminado permanentemente.'); }); }).catch(() => { alert('Contraseña incorrecta. No se puede eliminar.'); });
     });
 
-    // ---- EVENTOS, ASISTENCIA Y PERFIL COMPLETO (Se mantienen igual de la versión anterior) ----
+
+    // ---- EVENTOS, ASISTENCIA Y PERFIL COMPLETO ----
     window.editarEvento = function(id) { db.collection('eventos').doc(id).get().then(doc => { const ev = doc.data(); document.getElementById('id-evento-edit').value = id; document.getElementById('titulo-modal-evento').innerText = 'Editar Evento'; document.getElementById('nombre-evento').value = ev.nombre; document.getElementById('fecha-evento').value = ev.fecha; document.getElementById('modal-evento').classList.remove('modal-oculto'); document.getElementById('modal-evento').classList.add('modal-activo'); }); };
     document.getElementById('formulario-evento').addEventListener('submit', (e) => { e.preventDefault(); const idEdit = document.getElementById('id-evento-edit').value; const datos = { nombre: document.getElementById('nombre-evento').value, fecha: document.getElementById('fecha-evento').value }; if (idEdit) db.collection('eventos').doc(idEdit).update(datos).then(() => cerrarModal('modal-evento')); else { datos.fechaRegistro = firebase.firestore.FieldValue.serverTimestamp(); db.collection('eventos').add(datos).then(() => cerrarModal('modal-evento')); } });
     db.collection('eventos').onSnapshot((snapshot) => { document.getElementById('stat-eventos').innerText = snapshot.size; const listaEventos = document.getElementById('lista-eventos'); listaEventos.innerHTML = ''; eventosDisponibles = []; let eventosArr = []; snapshot.forEach(doc => eventosArr.push({id: doc.id, ...doc.data()})); eventosArr.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); eventosArr.forEach((evento) => { eventosDisponibles.push({ id: evento.id, nombre: evento.nombre, fecha: evento.fecha }); listaEventos.innerHTML += `<div class="tarjeta-joven" style="border-left-color: #10b981;"><div><h3>${evento.nombre}</h3><p>📅 ${evento.fecha}</p></div><button onclick="editarEvento('${evento.id}')" class="btn-editar">✏️ Editar Evento</button></div>`; }); });
