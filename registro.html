@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Únete a Red Unánimes!</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos exclusivos para que el registro se vea como Landing Page */
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background-color: #0f172a; }
+        .caja-registro { background: white; padding: 40px 30px; border-radius: 15px; width: 100%; max-width: 500px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .caja-registro h1 { color: #0284c7; text-align: center; font-size: 1.8rem; margin-bottom: 10px; }
+        .caja-registro p { text-align: center; color: #64748b; margin-bottom: 30px; }
+        .pantalla-exito { display: none; text-align: center; padding: 40px 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="caja-registro" id="caja-formulario">
+        <h1>¡Bienvenido a la Familia!</h1>
+        <p>Déjanos tus datos para conectarnos contigo.</p>
+        
+        <form id="form-publico">
+            <div class="campo" style="margin-bottom: 15px;">
+                <label>¿Cómo te llamas? (Nombre y Apellido)</label>
+                <input type="text" id="reg-nombre" required placeholder="Ej. Carlos Arias">
+            </div>
+            <div class="campo" style="margin-bottom: 15px;">
+                <label>Fecha de Nacimiento:</label>
+                <input type="date" id="reg-fecha" required>
+            </div>
+            <div class="campo" style="margin-bottom: 15px;">
+                <label>Número de WhatsApp:</label>
+                <input type="tel" id="reg-whatsapp" required placeholder="Ej. 8888-8888">
+            </div>
+            <div class="campo" style="margin-bottom: 15px;">
+                <label>¿De qué barrio o sector nos visitas?</label>
+                <input type="text" id="reg-barrio" placeholder="Ej. Centro, Santa Isabel...">
+            </div>
+            <div class="campo" style="margin-bottom: 25px;">
+                <label>Cuéntanos un poco de ti (Pasatiempos, música, gustos):</label>
+                <textarea id="reg-intereses" rows="3" placeholder="Me gusta tocar guitarra, jugar fútbol..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primario" style="width: 100%; font-size: 1.1rem; padding: 15px;">Enviar mis datos 🚀</button>
+        </form>
+    </div>
+
+    <!-- Pantalla de agradecimiento que aparece al enviar -->
+    <div class="caja-registro pantalla-exito" id="caja-exito">
+        <h1 style="font-size: 3rem; margin-bottom: 10px;">🎉</h1>
+        <h2 style="color: #10b981; margin-bottom: 15px;">¡Datos enviados!</h2>
+        <p>Ya eres parte de nuestra base de datos. Un líder se pondrá en contacto contigo pronto.</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+    <script src="registro.js"></script>
+</body>
+</html>
