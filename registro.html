@@ -6,12 +6,16 @@
     <title>¡Únete a Red Unánimes!</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos exclusivos para que el registro se vea como Landing Page */
         body { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background-color: #0f172a; }
         .caja-registro { background: white; padding: 40px 30px; border-radius: 15px; width: 100%; max-width: 500px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
         .caja-registro h1 { color: #0284c7; text-align: center; font-size: 1.8rem; margin-bottom: 10px; }
         .caja-registro p { text-align: center; color: #64748b; margin-bottom: 30px; }
         .pantalla-exito { display: none; text-align: center; padding: 40px 20px; }
+        
+        /* Ajustes visuales para las casillas nuevas */
+        .opciones-check { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 8px; }
+        .opciones-check label { display: flex; align-items: center; gap: 5px; font-weight: normal; font-size: 0.95rem; cursor: pointer; }
+        .opciones-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -21,6 +25,7 @@
         <p>Déjanos tus datos para conectarnos contigo.</p>
         
         <form id="form-publico">
+            <!-- Datos Básicos -->
             <div class="campo" style="margin-bottom: 15px;">
                 <label>¿Cómo te llamas? (Nombre y Apellido)</label>
                 <input type="text" id="reg-nombre" required placeholder="Ej. Carlos Arias">
@@ -37,16 +42,75 @@
                 <label>¿De qué barrio o sector nos visitas?</label>
                 <input type="text" id="reg-barrio" placeholder="Ej. Centro, Santa Isabel...">
             </div>
+
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 25px 0;">
+
+            <!-- Nuevas Preguntas de Perfil -->
+            <div class="campo" style="margin-bottom: 15px;">
+                <label>¿A qué te dedicas actualmente?</label>
+                <select id="reg-ocupacion">
+                    <option value="Colegio">Colegio</option>
+                    <option value="Universidad">Universidad</option>
+                    <option value="Trabajo">Trabajo</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="campo" style="margin-bottom: 15px;">
+                <label>¿Cuánto conoces de la Biblia?</label>
+                <select id="reg-biblia">
+                    <option value="1">1 - Casi nada</option>
+                    <option value="2">2 - Lo básico</option>
+                    <option value="3">3 - Regular</option>
+                    <option value="4">4 - Bastante</option>
+                    <option value="5">5 - Mucho</option>
+                </select>
+            </div>
+
+            <div class="campo" style="margin-bottom: 15px;">
+                <label>¿Vienes a la iglesia solo o acompañado?</label>
+                <select id="reg-acompanado">
+                    <option value="Solo">Solo</option>
+                    <option value="Acompañado">Acompañado</option>
+                </select>
+            </div>
+            
+            <div id="caja-quien-acompana" class="campo" style="display: none; margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #0284c7;">
+                <label>¿Con quién vienes? (Puedes marcar varios)</label>
+                <div class="opciones-check">
+                    <label><input type="checkbox" class="check-acompana" value="Familia"> Familia</label>
+                    <label><input type="checkbox" class="check-acompana" value="Amigos"> Amigos</label>
+                    <label><input type="checkbox" class="check-acompana" value="Pareja"> Pareja</label>
+                </div>
+            </div>
+
+            <div class="campo" style="margin-bottom: 15px; flex-direction: row; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px; border-radius: 8px;">
+                <input type="checkbox" id="reg-quiere-servir" style="width: 22px; height: 22px;">
+                <label style="margin: 0; font-weight: bold; color: #166534; cursor: pointer;" for="reg-quiere-servir">¿Te gustaría servir en la Red Juvenil?</label>
+            </div>
+            
+            <div id="caja-ministerios" class="campo" style="display: none; margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #10b981;">
+                <label>¿En cuáles áreas? (Puedes marcar varias)</label>
+                <div class="opciones-check" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <label><input type="checkbox" class="check-ministerio" value="Música"> Música</label>
+                    <label><input type="checkbox" class="check-ministerio" value="Danza"> Danza</label>
+                    <label><input type="checkbox" class="check-ministerio" value="Cocina"> Cocina</label>
+                    <label><input type="checkbox" class="check-ministerio" value="Multimedia"> Multimedia</label>
+                    <label><input type="checkbox" class="check-ministerio" value="Niños"> Niños</label>
+                    <label><input type="checkbox" class="check-ministerio" value="Ujieres"> Ujieres</label>
+                    <label><input type="checkbox" class="check-ministerio" value="Equipo RJU"> Equipo RJU</label>
+                </div>
+            </div>
+
             <div class="campo" style="margin-bottom: 25px;">
-                <label>Cuéntanos un poco de ti (Pasatiempos, música, gustos):</label>
-                <textarea id="reg-intereses" rows="3" placeholder="Me gusta tocar guitarra, jugar fútbol..."></textarea>
+                <label>Comentarios adicionales (¿Qué temas te gustaría aprender?):</label>
+                <textarea id="reg-comentarios" rows="3" placeholder="Me gustaría aprender sobre..."></textarea>
             </div>
             
             <button type="submit" class="btn-primario" style="width: 100%; font-size: 1.1rem; padding: 15px;">Enviar mis datos 🚀</button>
         </form>
     </div>
 
-    <!-- Pantalla de agradecimiento que aparece al enviar -->
     <div class="caja-registro pantalla-exito" id="caja-exito">
         <h1 style="font-size: 3rem; margin-bottom: 10px;">🎉</h1>
         <h2 style="color: #10b981; margin-bottom: 15px;">¡Datos enviados!</h2>

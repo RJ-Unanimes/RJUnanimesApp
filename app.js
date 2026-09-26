@@ -351,12 +351,48 @@ function iniciarApp() {
         db.collection('jovenes').doc(idJoven).get().then((doc) => {
             if(doc.exists) {
                 const j = doc.data();
+                
+                // --- NUEVO: Calcular edad automáticamente ---
+                let textoEdad = '';
+                if (j.fechaNac) {
+                    // Separar el año, mes y día para evitar errores de zona horaria
+                    const partesFecha = j.fechaNac.split('-');
+                    const cumple = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
+                    const hoy = new Date();
+                    
+                    let edad = hoy.getFullYear() - cumple.getFullYear();
+                    const mes = hoy.getMonth() - cumple.getMonth();
+                    
+                    // Si aún no ha pasado su mes de cumpleaños, o si es el mes pero no ha llegado el día, restamos 1 año
+                    if (mes < 0 || (mes === 0 && hoy.getDate() < cumple.getDate())) {
+                        edad--;
+                    }
+                    textoEdad = ` <strong style="color: #0284c7;">(${edad} años)</strong>`;
+                }
+
+                // Formatear datos opcionales
+                const ministeriosTexto = (j.quiereServir && j.ministerios && j.ministerios.length > 0) ? j.ministerios.join(', ') : 'Ninguno seleccionado';
+                const acompanantesTexto = (j.tipoAsistencia === 'Acompañado' && j.acompanantes && j.acompanantes.length > 0) ? `(${j.acompanantes.join(', ')})` : '';
+
                 cajaInfo.innerHTML = `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <p><strong>📱 WhatsApp:</strong> ${j.whatsapp || 'No registrado'}</p><p><strong>🎂 Nacimiento:</strong> ${j.fechaNac || 'No registrado'}</p>
-                        <p><strong>🗓️ 1era Visita:</strong> ${j.fechaVisita || 'No registrado'}</p><p><strong>🤝 Conector:</strong> ${j.conector || 'Ninguno'}</p>
-                    </div><hr style="margin: 15px 0; border-top: 1px solid #cbd5e1;">
-                    <p><strong>🧠 Personalidad y Gustos:</strong><br>${j.intereses || 'No especificados'}</p><p style="margin-top: 10px;"><strong>🌟 Dones:</strong><br>${j.dones || 'No especificados'}</p>
+                        <p><strong>📱 WhatsApp:</strong> ${j.whatsapp || 'No registrado'}</p>
+                        <p><strong>🎂 Nacimiento:</strong> ${j.fechaNac || 'No registrado'}${textoEdad}</p>
+                        <p><strong>🗓️ 1era Visita:</strong> ${j.fechaVisita || 'No registrado'}</p>
+                        <p><strong>🤝 Conector:</strong> ${j.conector || 'Ninguno'}</p>
+                    </div>
+                    <hr style="margin: 15px 0; border-top: 1px solid #cbd5e1;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <p><strong>💼 Ocupación:</strong> ${j.ocupacion || 'No especificada'}</p>
+                        <p><strong>📖 Nivel Biblia:</strong> ${j.nivelBiblia ? j.nivelBiblia + '/5' : 'No especificado'}</p>
+                        <p><strong>🚶‍♂️ Asistencia:</strong> ${j.tipoAsistencia || 'No especificada'} ${acompanantesTexto}</p>
+                        <p><strong>🙌 Desea Servir:</strong> ${j.quiereServir ? 'Sí' : 'No'}</p>
+                    </div>
+                    <p style="margin-top: 10px; background: #f0fdf4; padding: 10px; border-radius: 6px;"><strong>🎯 Áreas de Servicio:</strong> ${ministeriosTexto}</p>
+                    <hr style="margin: 15px 0; border-top: 1px solid #cbd5e1;">
+                    <p><strong>🧠 Personalidad y Gustos:</strong><br>${j.intereses || 'No especificados'}</p>
+                    <p style="margin-top: 10px;"><strong>🌟 Dones Evaluados:</strong><br>${j.dones || 'No especificados'}</p>
+                    <p style="margin-top: 10px; padding: 10px; background: #fffbeb; border-radius: 6px; border-left: 3px solid #f59e0b;"><strong>💬 Comentarios / Desea aprender:</strong><br>${j.comentarios || 'Ninguno'}</p>
                 `;
             }
         });
